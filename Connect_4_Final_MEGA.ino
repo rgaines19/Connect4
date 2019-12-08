@@ -61,7 +61,9 @@ int servo_chip_release_pin = 6;
 volatile byte state1 = LOW;
 volatile byte state2 = LOW;
 volatile byte state3 = LOW;
-int sum = 0;
+int sum = 10;
+bool isValidmove = false; 
+bool isValid = false;
 
 Servo chip_dispenser;
 Servo chute;
@@ -75,6 +77,14 @@ void setup() {
   chip_dispenser.attach(servo_chip_dispenser_pin);
   chute.attach(servo_chute_position_pin);
   chip_release.attach(servo_chip_release_pin);
+  pinMode(interrupt_signal_pin, INPUT);
+  pinMode(enable_input_ic_pin, OUTPUT);
+  pinMode(A0_pin,INPUT);
+  pinMode(A0_pin,INPUT);
+  pinMode(A0_pin,INPUT);
+  attachInterrupt(digitalPinToInterrupt(interrupt_signal_pin),collect,RISING);
+  
+  
 }
 
 void loop() {
@@ -93,17 +103,43 @@ void loop() {
       next_state = 1;
       break;
     case 1: // pick cpu level
-      
+      while(isValid == false){
+        level = sum;
+        delay(100);
+        if(isCPUlevelValid(level) == true){
+          isValid = true;
+        }
+      }
 
       next_state = 2;
+      isValid = false;
       break;
     case 2: // player pick move using controller
-      Move = turnOrder[turnOrdercount];
-      turnOrdercount++;
+//      Move = turnOrder[turnOrdercount];
+//      turnOrdercount++;
       players_turn = false;
+      sum = 10;
+      Move = sum;
+      Serial.print("Sum is: ");
+      Serial.println(Move,DEC);
+      interrupts();
+      while(isValidmove == false){
+        Move = sum;
+        delay(100);
+        if(isMoveValid(Move) == true){
+          isValidmove = true;
+        }
+        delay(100);
+        Serial.println(isValidmove,DEC);
+      }
       
       if(isMoveValid(Move) == true){
       next_state = 3;
+      isValidmove = false;
+      digitalWrite(interrupt_signal_pin,HIGH);
+      Serial.print("Sum is: ");
+      Serial.println(Move,DEC);
+      noInterrupts();
       }
       else{
         next_state = 2;
@@ -169,13 +205,13 @@ void loop() {
 int AIpickMove(void){
     int col =0;
     switch (level){
-      case 1:
+      case 0:
         col = AIrandMove();
         break;
-      case 2:
+      case 1:
         col = PickBestMove();
         break;
-      case 3:
+      case 2:
         col = PickBestMove();
         break;
       default:
@@ -477,7 +513,7 @@ bool checkWinState(void){
     for (int now = 0; now <24; now++) {
         if(horSum[now] == 4 || horSum[now] == -4){
             win = true;
-            break;
+            break; 
         }
     }
 
@@ -597,6 +633,7 @@ int servo_commands(int col){
 }
 
 void collect(void){
+    count++;
     state1 = digitalRead(A0_pin);
     state2 = digitalRead(A1_pin);
     state3 = digitalRead(A2_pin);
@@ -605,13 +642,27 @@ void collect(void){
     digitalWrite(enable_input_ic_pin, HIGH);
     Serial.print("You have entered the interrupt : ");
     Serial.println(count,DEC);
-    if(count == 0){
-    sum = 4*state1 + 2 *state2 + state3;
+
+    sum = 4*state3 + 2 *state2 + state1 - 1;
     
-    }
+    Serial.print("Sum is: ");
     Serial.println(sum,DEC);
-    Serial.println("enable_input_ic_pin is High");
+        Serial.print("A0 is: ");
+    Serial.println(state1,DEC);
+        Serial.print("A1 is: ");
+    Serial.println(state2,DEC);
+        Serial.print("A2 is: ");
+    Serial.println(state3,DEC);
+   
     
-    count++;
+
     
+    
+}
+bool isCPUlevelValid(int level){
+  bool check = false;
+   if(level == 0 || level == 1 || level == 2){
+    check = true;
+   }
+  return check;
 }
