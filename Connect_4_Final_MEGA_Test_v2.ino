@@ -121,13 +121,18 @@ void setup() {
   pinMode(interrupt_signal_pin, INPUT);
   pinMode(enable_input_ic_pin, OUTPUT);
   pinMode(A0_pin,INPUT);
-  pinMode(A0_pin,INPUT);
-  pinMode(A0_pin,INPUT);
+  pinMode(A1_pin,INPUT);
+  pinMode(A2_pin,INPUT);
   pinMode(dummyPin,OUTPUT);
   attachInterrupt(digitalPinToInterrupt(interrupt_signal_pin),collect,RISING);
-  pinMode(LED_lose_pin,OUTPUT);
-  digitalWrite(LED_lose_pin,LOW);
-  //Serial.println(Move,DEC);
+  pinMode(LED_0_pin,OUTPUT);
+  pinMode(LED_1_pin,OUTPUT);
+  pinMode(LED_2_pin,OUTPUT);
+  pinMode(LED_3_pin,OUTPUT);
+  pinMode(LED_4_pin,OUTPUT);
+  pinMode(LED_5_pin,OUTPUT);
+  pinMode(LED_6_pin,OUTPUT);
+
 
     Timer3.initialize(250000);
     Timer3.attachInterrupt(blinkLED); // blinkLED to run every 0.5 seconds
