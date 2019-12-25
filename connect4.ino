@@ -1,6 +1,6 @@
 //
 //  main.c
-//  con4
+//  connect 4 made in c
 //
 //  Created by Ron Gaines on 9/4/19.
 //  Copyright © 2019 Ron Gaines. All rights reserved.
