@@ -1,21 +1,24 @@
 #include <TimerThree.h>
-
 #include <Servo.h>
-// use this code to test game
-//First column servo command pos = 19
-//Seventh column servo command pos = 157
 
-int colToken[7] = {5,5,5,5,5,5,5};
-int gameboard[6][7];
-int colToken_cpy[7] = {5,5,5,5,5,5,5};
-int gameboard_cpy[6][7];
+
+int colToken[7] = {5,5,5,5,5,5,5};      // This vector is used to keep track of the horizontal position of each column
+int gameboard[6][7];                    // This matrix is what holds the game state
+int colToken_cpy[7] = {5,5,5,5,5,5,5};  // Copy of the colToken vector used by the AI to make it's next move
+int gameboard_cpy[6][7];                // Copy of game maxtrix used by the AI to make it's next move
 int turn = 1;
 int level = 4;
-int M = 6;
-int N = 7;
+int M = 6;  //Row
+int N = 7;  //Column constant
 volatile int count  = 0;
+byte Move = 7;
 
-int verSum[21];
+/* The next few vectors are used to search the game matrix and sum every combination of 4 tokens. The VerSum search all vertical
+matches. horSum search all horizontal matches. posDiagSum search all positive slope diagonal matches and negDiagSum search all negative
+slope diagonal matches.
+*/
+
+int verSum[21]; 
 int horSum[24];
 int posDiagSum[12];
 int negDiagSum[12];
@@ -23,23 +26,22 @@ int verSum_cpy[21];
 int horSum_cpy[24];
 int posDiagSum_cpy[12];
 int negDiagSum_cpy[12];
-bool winState = false;
+
+
 byte state = 0;
 byte next_state = 0;
+
+bool winState = false;
 bool gameOver = false;
 bool PlayerWin_flag = false;
 bool CPUwin_flag = false;
 bool Draw_flag = false;
-byte Move = 7;
 bool players_turn = true;
-int turnOrder[13] = {7,7,7,7,0,1,2,3,4,5,6,7,0};
-int turnOrdercount = 0;
-
-
 volatile bool blinkLED_flag = false;
 volatile bool blinkLevel_flag = false;
 volatile bool blinkPlayer_flag = false;
 volatile bool blinkWinner_flag = false;
+
 volatile bool blinkState = true;
 volatile bool blinkState_pin0 = true;
 volatile bool blinkState_pin1 = true;
@@ -80,8 +82,7 @@ volatile bool sample_flag = false;
 volatile byte sum = 7;
 volatile bool isValidmove = false; 
 volatile bool isValid = false;
-int dummyPin = 37;
-int lastsum = 0;
+
 
 int posupdateD = 90;
 int posupdateC = 87;
